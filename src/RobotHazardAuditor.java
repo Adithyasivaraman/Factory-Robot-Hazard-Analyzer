@@ -9,33 +9,50 @@ public class RobotHazardAuditor {
             String machineryState)
             throws RobotSafetyException {
 
+        validateArmPrecision(armPrecision);
+        validateWorkerDensity(workerDensity);
+
+        double machineRiskFactor =
+                getMachineRiskFactor(machineryState);
+
+        return ((1.0 - armPrecision) * 15.0)
+                + (workerDensity * machineRiskFactor);
+    }
+
+    private void validateArmPrecision(double armPrecision)
+            throws RobotSafetyException {
+
         if (armPrecision < 0.0 || armPrecision > 1.0) {
             throw new RobotSafetyException(
                     "Error: Arm precision must be 0.0-1.0"
             );
         }
+    }
+
+    private void validateWorkerDensity(int workerDensity)
+            throws RobotSafetyException {
 
         if (workerDensity < 1 || workerDensity > 20) {
             throw new RobotSafetyException(
                     "Error: Worker density must be 1-20"
             );
         }
+    }
 
-        double machineRiskFactor;
+    private double getMachineRiskFactor(String machineryState)
+            throws RobotSafetyException {
 
-        if (machineryState.equals("Worn")) {
-            machineRiskFactor = 1.3;
-        } else if (machineryState.equals("Faulty")) {
-            machineRiskFactor = 2.0;
-        } else if (machineryState.equals("Critical")) {
-            machineRiskFactor = 3.0;
-        } else {
-            throw new RobotSafetyException(
-                    "Error: Unsupported machinery state"
-            );
+        switch (machineryState) {
+            case "Worn":
+                return 1.3;
+            case "Faulty":
+                return 2.0;
+            case "Critical":
+                return 3.0;
+            default:
+                throw new RobotSafetyException(
+                        "Error: Unsupported machinery state"
+                );
         }
-
-        return ((1.0 - armPrecision) * 15.0)
-                + (workerDensity * machineRiskFactor);
     }
 }
