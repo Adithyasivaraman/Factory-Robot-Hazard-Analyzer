@@ -3,12 +3,10 @@ import java.util.Scanner;
 /**
  * Factory Robot Hazard Analyzer
  *
- * UC4: Validation using conditional logic
- *
- * Adds input validation using if-else statements.
+ * UC5: Refactor validation and calculation into method
  *
  * @author Adithya
- * @version 4.0
+ * @version 5.0
  */
 public class FactoryRobotHazardAnalyzer {
 
@@ -28,15 +26,30 @@ public class FactoryRobotHazardAnalyzer {
         System.out.println("Enter Machinery State (Worn/Faulty/Critical):");
         String machineryState = scanner.nextLine();
 
-        // Validation logic
+        double risk = calculateHazardRisk(
+                armPrecision,
+                workerDensity,
+                machineryState
+        );
+
+        if (risk >= 0) {
+            System.out.println("Robot Hazard Risk Score: " + risk);
+        }
+    }
+
+    public static double calculateHazardRisk(
+            double armPrecision,
+            int workerDensity,
+            String machineryState) {
+
         if (armPrecision < 0.0 || armPrecision > 1.0) {
             System.out.println("Error: Arm precision must be 0.0-1.0");
-            return;
+            return -1;
         }
 
         if (workerDensity < 1 || workerDensity > 20) {
             System.out.println("Error: Worker density must be 1-20");
-            return;
+            return -1;
         }
 
         double machineRiskFactor = 0;
@@ -49,13 +62,10 @@ public class FactoryRobotHazardAnalyzer {
             machineRiskFactor = 3.0;
         } else {
             System.out.println("Error: Unsupported machinery state");
-            return;
+            return -1;
         }
 
-        double hazardRisk =
-                ((1.0 - armPrecision) * 15.0)
-                        + (workerDensity * machineRiskFactor);
-
-        System.out.println("Robot Hazard Risk Score: " + hazardRisk);
+        return ((1.0 - armPrecision) * 15.0)
+                + (workerDensity * machineRiskFactor);
     }
 }
